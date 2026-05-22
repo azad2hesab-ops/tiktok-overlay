@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<title>TikTok Overlay Panel</title>
+<style>
+body{
+  margin:0;
+  min-height:100vh;
+  background:#0b0b0f;
+  color:white;
+  font-family:Arial,sans-serif;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.box{
+  width:420px;
+  background:#16161c;
+  border:1px solid #2b2b34;
+  border-radius:24px;
+  padding:28px;
+  text-align:center;
+  box-shadow:0 20px 60px rgba(0,0,0,.45);
+}
+h1{margin:0 0 12px;font-size:28px}
+p{color:#b8b8c2}
+input{
+  width:100%;
+  padding:15px;
+  border-radius:14px;
+  border:1px solid #333;
+  background:#0f0f13;
+  color:white;
+  font-size:17px;
+  box-sizing:border-box;
+  margin:16px 0;
+}
+button{
+  width:100%;
+  padding:15px;
+  border:0;
+  border-radius:14px;
+  background:linear-gradient(135deg,#25f4ee,#fe2c55);
+  color:white;
+  font-size:17px;
+  font-weight:900;
+  cursor:pointer;
+}
+.link{
+  margin-top:18px;
+  display:none;
+  background:#0f0f13;
+  padding:14px;
+  border-radius:14px;
+  word-break:break-all;
+}
+a{color:#25f4ee;font-weight:900}
+</style>
+</head>
+<body>
+
+<div class="box">
+  <h1>TikTok LIVE Overlay</h1>
+  <p>LIVE username yaz, öz overlay linkini al.</p>
+
+  <input id="username" placeholder="Məsələn: azad2hesab">
+
+  <button onclick="createOverlay()">Overlay yarat</button>
+
+  <div class="link" id="result"></div>
+</div>
+
+<script>
+function createOverlay(){
+  let username = document.getElementById("username").value.trim().replace("@","");
+  let result = document.getElementById("result");
+
+  if(!username){
+    result.style.display = "block";
+    result.innerHTML = "Username yaz.";
+    return;
+  }
+
+  const link = `${location.origin}/overlay.html?user=${encodeURIComponent(username)}`;
+
+  result.style.display = "block";
+  result.innerHTML = `
+    <div>Overlay linkin:</div><br>
+    <a href="${link}" target="_blank">${link}</a>
+  `;
+}
+</script>
+
+</body>
+</html>

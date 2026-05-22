@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard</title>
+
+<style>
+body{
+  margin:0;
+  min-height:100vh;
+  background:#0b0b0f;
+  color:white;
+  font-family:Arial,sans-serif;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.box{
+  width:500px;
+  background:#16161c;
+  border:1px solid #2b2b34;
+  border-radius:24px;
+  padding:30px;
+}
+
+h1{
+  margin-top:0;
+}
+
+.info{
+  background:#0f0f13;
+  border-radius:14px;
+  padding:14px;
+  margin:14px 0;
+}
+
+input{
+  width:100%;
+  padding:14px;
+  border-radius:14px;
+  border:1px solid #333;
+  background:#0f0f13;
+  color:white;
+  font-size:16px;
+  box-sizing:border-box;
+  margin-top:12px;
+}
+
+button{
+  width:100%;
+  padding:14px;
+  border-radius:14px;
+  border:0;
+  margin-top:14px;
+  background:linear-gradient(135deg,#25f4ee,#fe2c55);
+  color:white;
+  font-size:16px;
+  font-weight:900;
+  cursor:pointer;
+}
+
+.linkBox{
+  margin-top:18px;
+  background:#0f0f13;
+  border-radius:14px;
+  padding:14px;
+  word-break:break-all;
+  display:none;
+}
+
+a{
+  color:#25f4ee;
+  font-weight:900;
+}
+
+.logout{
+  background:#2c2c35;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+
+  <h1>Dashboard</h1>
+
+  <div class="info" id="userInfo">
+    Yüklənir...
+  </div>
+
+  <input
+    id="username"
+    placeholder="TikTok username"
+  >
+
+  <button onclick="saveUsername()">
+    Overlay yarat
+  </button>
+
+  <div class="linkBox" id="overlayBox"></div>
+
+  <button
+    class="logout"
+    onclick="logout()"
+  >
+    Çıxış et
+  </button>
+
+</div>
+
+<script>
+
+async function loadUser(){
+
+  const res = await fetch("/me");
+  const data = await res.json();
+
+  if(!data.loggedIn){
+
+    location.href = "/login.html";
+    return;
+
+  }
+
+  document.getElementById("userInfo")
+    .innerHTML =
+    `
+      Email: ${data.user.email}
+    `;
+
+  if(data.user.tiktok_username){
+
+    showOverlay(
+      data.user.tiktok_username
+    );
+
+    document.getElementById("username")
+      .value =
+      data.user.tiktok_username;
+  }
+
+}
+
+function showOverlay(username){
+
+  const link =
+    `${location.origin}/overlay.html?user=${encodeURIComponent(username)}`;
+
+  const box =
+    document.getElementById("overlayBox");
+
+  box.style.display = "block";
+
+  box.innerHTML =
+  `
+    <div>
+      Overlay linkin:
+    </div>
+
+    <br>
+
+    <a
+      href="${link}"
+      target="_blank"
+    >
+      ${link}
+    </a>
+  `;
+}
+
+async function saveUsername(){
+
+  const username =
+    document.getElementById("username")
+    .value
+    .trim()
+    .replace("@","");
+
+  const res =
+    await fetch("/save-username",{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({
+        username
+      })
+    });
+
+  const data = await res.json();
+
+  if(data.success){
+
+    showOverlay(username);
+
+  }
+
+}
+
+function logout(){
+
+  location.href = "/logout";
+
+}
+
+loadUser();
+
+</script>
+
+</body>
+</html>

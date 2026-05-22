@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<title>Admin Panel</title>
+<style>
+body{
+  margin:0;
+  background:#0b0b0f;
+  color:white;
+  font-family:Arial,sans-serif;
+  padding:30px;
+}
+h1{margin-top:0}
+.card{
+  background:#16161c;
+  border:1px solid #2b2b34;
+  border-radius:20px;
+  padding:20px;
+  margin-bottom:20px;
+}
+table{
+  width:100%;
+  border-collapse:collapse;
+  background:#111116;
+  border-radius:16px;
+  overflow:hidden;
+}
+th,td{
+  padding:14px;
+  border-bottom:1px solid #2b2b34;
+  text-align:left;
+}
+th{
+  background:#20202a;
+  color:#25f4ee;
+}
+a{
+  color:#25f4ee;
+  font-weight:800;
+}
+.badge{
+  display:inline-block;
+  background:linear-gradient(135deg,#25f4ee,#fe2c55);
+  padding:8px 14px;
+  border-radius:14px;
+  font-weight:900;
+}
+</style>
+</head>
+<body>
+
+<h1>Admin Panel</h1>
+
+<div class="card">
+  <div class="badge" id="total">User sayı: 0</div>
+</div>
+
+<div class="card">
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Email</th>
+        <th>TikTok Username</th>
+        <th>Overlay</th>
+      </tr>
+    </thead>
+    <tbody id="users"></tbody>
+  </table>
+</div>
+
+<script>
+async function loadAdmin(){
+  const res = await fetch("/admin-data");
+  const data = await res.json();
+
+  if(!data.success){
+    alert(data.message);
+    location.href = "/login.html";
+    return;
+  }
+
+  document.getElementById("total").innerText =
+    "User sayı: " + data.totalUsers;
+
+  document.getElementById("users").innerHTML =
+    data.users.map(u => {
+      const username = u.tiktok_username || "";
+      const link = username
+        ? `${location.origin}/overlay.html?user=${encodeURIComponent(username)}`
+        : "";
+
+      return `
+        <tr>
+          <td>${u.id}</td>
+          <td>${u.email}</td>
+          <td>${username || "Yoxdur"}</td>
+          <td>
+            ${link ? `<a href="${link}" target="_blank">Overlay aç</a>` : "Yoxdur"}
+          </td>
+        </tr>
+      `;
+    }).join("");
+}
+
+loadAdmin();
+</script>
+
+</body>
+</html>

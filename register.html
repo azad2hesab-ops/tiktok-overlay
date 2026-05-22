@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<title>Register</title>
+<style>
+body{margin:0;min-height:100vh;background:#0b0b0f;color:white;font-family:Arial,sans-serif;display:flex;align-items:center;justify-content:center}
+.box{width:390px;background:#16161c;border:1px solid #2b2b34;border-radius:24px;padding:28px;text-align:center}
+input,button{width:100%;padding:14px;border-radius:14px;box-sizing:border-box;margin:9px 0;font-size:16px}
+input{background:#0f0f13;color:white;border:1px solid #333}
+button{border:0;background:linear-gradient(135deg,#25f4ee,#fe2c55);color:white;font-weight:900;cursor:pointer}
+a{color:#25f4ee}
+.msg{margin-top:12px;color:#ffcc66}
+</style>
+</head>
+<body>
+<div class="box">
+  <h1>Qeydiyyat</h1>
+  <input id="email" placeholder="Email">
+  <input id="password" type="password" placeholder="Parol">
+  <button onclick="register()">Hesab yarat</button>
+  <div class="msg" id="msg"></div>
+  <p>Hesabın var? <a href="/login.html">Login ol</a></p>
+</div>
+
+<script>
+async function register(){
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const msg = document.getElementById("msg");
+
+  const res = await fetch("/register", {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({email,password})
+  });
+
+  const data = await res.json();
+
+  if(data.success){
+    location.href = "/dashboard.html";
+  }else{
+    msg.innerText = data.message;
+  }
+}
+</script>
+</body>
+</html>

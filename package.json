@@ -1,0 +1,21 @@
+{
+  "name": "tiktok-overlay",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "express": "^5.2.1",
+    "express-session": "^1.19.0",
+    "socket.io": "^4.8.3",
+    "sqlite3": "^6.0.1",
+    "tiktok-live-connector": "^2.1.1-beta1"
+  }
+}

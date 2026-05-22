@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<title>TikTok Top 5 Overlay</title>
+<script src="/socket.io/socket.io.js"></script>
+
+<style>
+body{
+  margin:0;
+  background:transparent;
+  overflow:hidden;
+  font-family:Arial,sans-serif;
+  color:white;
+}
+
+.leaderboard{
+  position:absolute;
+  left:50%;
+  bottom:45px;
+  transform:translateX(-50%);
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  gap:14px;
+}
+
+.gifter{
+  width:105px;
+  text-align:center;
+  position:relative;
+  transition:.3s;
+}
+
+.gifter.pos1{
+  width:170px;
+  order:3;
+  transform:translateY(-38px);
+  z-index:10;
+}
+
+.gifter.pos2{
+  order:2;
+  transform:translateY(2px);
+  z-index:8;
+}
+
+.gifter.pos3{
+  order:4;
+  transform:translateY(2px);
+  z-index:8;
+}
+
+.gifter.pos4{
+  order:1;
+  transform:translateY(26px);
+  z-index:6;
+}
+
+.gifter.pos5{
+  order:5;
+  transform:translateY(26px);
+  z-index:6;
+}
+
+.avatarWrap{
+  width:82px;
+  height:82px;
+  margin:0 auto -8px;
+  border-radius:50%;
+  padding:4px;
+  background:linear-gradient(135deg,#25f4ee,#fe2c55,#f5c542);
+  box-shadow:0 0 20px rgba(37,244,238,.45);
+  position:relative;
+}
+
+.pos1 .avatarWrap{
+  width:132px;
+  height:132px;
+  box-shadow:0 0 38px rgba(245,197,66,.9),0 0 60px rgba(254,44,85,.35);
+}
+
+.avatar{
+  width:100%;
+  height:100%;
+  border-radius:50%;
+  object-fit:cover;
+  background:#222;
+}
+
+.crown{
+  position:absolute;
+  top:-38px;
+  left:50%;
+  transform:translateX(-50%);
+  font-size:38px;
+  display:none;
+  filter:drop-shadow(0 0 12px #f5c542);
+}
+
+.pos1 .crown{
+  display:block;
+}
+
+.rank{
+  position:absolute;
+  right:2px;
+  bottom:2px;
+  width:27px;
+  height:27px;
+  border-radius:50%;
+  background:#f5c542;
+  color:#111;
+  font-size:15px;
+  font-weight:900;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:2px solid #111;
+}
+
+.pos1 .rank{
+  width:34px;
+  height:34px;
+  font-size:18px;
+}
+
+.nameBox{
+  background:rgba(10,10,14,.88);
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:14px;
+  padding:9px 7px 8px;
+  box-shadow:0 8px 24px rgba(0,0,0,.45);
+}
+
+.pos1 .nameBox{
+  padding:11px 9px 10px;
+  border:1px solid rgba(245,197,66,.45);
+}
+
+.name{
+  font-size:13px;
+  font-weight:900;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  color:#f5d06a;
+}
+
+.pos1 .name{
+  font-size:16px;
+}
+
+.coins{
+  margin-top:5px;
+  font-size:14px;
+  font-weight:900;
+  color:#fff;
+}
+
+.pos1 .coins{
+  font-size:17px;
+}
+
+.empty{
+  position:absolute;
+  left:50%;
+  bottom:60px;
+  transform:translateX(-50%);
+  background:rgba(15,15,18,.82);
+  padding:18px 24px;
+  border-radius:18px;
+  font-size:20px;
+  font-weight:900;
+}
+
+.gifter.activeGift .avatarWrap{
+  animation:giftFrame 1s ease-in-out infinite;
+}
+
+.gifter.activeGift .avatar{
+  animation:giftShake .6s ease-in-out infinite;
+}
+
+.beast{
+  position:absolute;
+  top:-66px;
+  left:50%;
+  transform:translateX(-50%);
+  font-size:46px;
+  z-index:99;
+  animation:flyBeast 1s ease-in-out infinite;
+  filter:drop-shadow(0 0 14px #f5c542);
+}
+
+.giftTag{
+  position:absolute;
+  top:-22px;
+  left:50%;
+  transform:translateX(-50%);
+  background:linear-gradient(135deg,#fe2c55,#f5c542);
+  color:#111;
+  padding:5px 11px;
+  border-radius:20px;
+  font-size:11px;
+  font-weight:900;
+  box-shadow:0 0 20px rgba(245,197,66,.8);
+  z-index:98;
+}
+
+@keyframes giftFrame{
+  0%{transform:scale(1);box-shadow:0 0 10px #25f4ee;}
+  50%{transform:scale(1.14);box-shadow:0 0 42px #f5c542,0 0 65px #fe2c55;}
+  100%{transform:scale(1);box-shadow:0 0 10px #25f4ee;}
+}
+
+@keyframes giftShake{
+  0%,100%{transform:rotate(0deg)}
+  25%{transform:rotate(-6deg)}
+  75%{transform:rotate(6deg)}
+}
+
+@keyframes flyBeast{
+  0%,100%{transform:translateX(-50%) translateY(0) scale(1)}
+  50%{transform:translateX(-50%) translateY(-12px) scale(1.18)}
+}
+
+@media(max-width:800px){
+  .leaderboard{
+    bottom:30px;
+    gap:7px;
+  }
+
+  .gifter{
+    width:68px;
+  }
+
+  .gifter.pos1{
+    width:92px;
+    transform:translateY(-28px);
+  }
+
+  .avatarWrap{
+    width:54px;
+    height:54px;
+  }
+
+  .pos1 .avatarWrap{
+    width:74px;
+    height:74px;
+  }
+
+  .name{
+    font-size:10px;
+  }
+
+  .pos1 .name{
+    font-size:11px;
+  }
+
+  .coins{
+    font-size:11px;
+  }
+
+  .pos1 .coins{
+    font-size:12px;
+  }
+
+  .rank{
+    width:20px;
+    height:20px;
+    font-size:11px;
+  }
+
+  .pos1 .rank{
+    width:24px;
+    height:24px;
+    font-size:13px;
+  }
+
+  .crown{
+    top:-28px;
+    font-size:28px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div id="empty" class="empty">Hələ gift yoxdur...</div>
+<div id="leaderboard" class="leaderboard"></div>
+
+<script>
+const socket = io();
+
+const params = new URLSearchParams(window.location.search);
+const username = params.get("user");
+
+socket.emit("joinLive", username);
+
+function shortNumber(num){
+  if(num >= 1000000) return (num / 1000000).toFixed(1) + "M";
+  if(num >= 1000) return (num / 1000).toFixed(1) + "K";
+  return num;
+}
+
+function renderTopGifters(list){
+  const board = document.getElementById("leaderboard");
+  const empty = document.getElementById("empty");
+
+  if(!list || list.length === 0){
+    board.innerHTML = "";
+    empty.style.display = "block";
+    return;
+  }
+
+  empty.style.display = "none";
+
+  board.innerHTML = list.map((u,index)=>{
+    const avatar = u.avatar || "https://placehold.co/120x120/222/fff?text=User";
+    const positionClass = "pos" + (index + 1);
+
+    return `
+      <div class="gifter ${positionClass}" data-user="${String(u.userId)}">
+        <div class="avatarWrap">
+          <div class="crown">👑</div>
+          <img class="avatar" src="${avatar}">
+          <div class="rank">${index + 1}</div>
+        </div>
+
+        <div class="nameBox">
+          <div class="name">${u.nickname}</div>
+          <div class="coins">🟡 ${shortNumber(u.total)}</div>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function animateGifter(userId){
+  const target = document.querySelector(`.gifter[data-user="${String(userId)}"]`);
+  if(!target) return;
+
+  target.classList.add("activeGift");
+
+  const beast = document.createElement("div");
+  beast.className = "beast";
+  beast.innerText = Math.random() > 0.5 ? "🦅" : "🦁";
+
+  const tag = document.createElement("div");
+  tag.className = "giftTag";
+  tag.innerText = "HƏDİYYƏ!";
+
+  target.appendChild(beast);
+  target.appendChild(tag);
+
+  setTimeout(()=>{
+    target.classList.remove("activeGift");
+    beast.remove();
+    tag.remove();
+  },4500);
+}
+
+socket.on("init", data => {
+  renderTopGifters(data.topGifters);
+});
+
+socket.on("topGifters", list => {
+  renderTopGifters(list);
+});
+
+socket.on("gift", data => {
+  setTimeout(()=>{
+    animateGifter(data.userId);
+  },250);
+});
+</script>
+
+</body>
+</html>
