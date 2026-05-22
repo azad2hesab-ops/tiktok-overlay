@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <title>Dashboard</title>
-
 <style>
 body{
   margin:0;
@@ -15,51 +14,52 @@ body{
   align-items:center;
   justify-content:center;
 }
-
 .box{
-  width:500px;
+  width:620px;
   background:#16161c;
   border:1px solid #2b2b34;
   border-radius:24px;
   padding:30px;
 }
-
-h1{
-  margin-top:0;
-}
-
-.info{
-  background:#0f0f13;
-  border-radius:14px;
-  padding:14px;
-  margin:14px 0;
-}
-
-input{
+input,select,button{
   width:100%;
   padding:14px;
   border-radius:14px;
-  border:1px solid #333;
-  background:#0f0f13;
-  color:white;
-  font-size:16px;
   box-sizing:border-box;
   margin-top:12px;
+  font-size:16px;
 }
-
+input,select{
+  background:#0f0f13;
+  color:white;
+  border:1px solid #333;
+}
 button{
-  width:100%;
-  padding:14px;
-  border-radius:14px;
   border:0;
-  margin-top:14px;
   background:linear-gradient(135deg,#25f4ee,#fe2c55);
   color:white;
-  font-size:16px;
   font-weight:900;
   cursor:pointer;
 }
-
+.themes{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin-top:14px;
+}
+.theme{
+  background:#0f0f13;
+  border:2px solid #2b2b34;
+  border-radius:16px;
+  padding:14px;
+  cursor:pointer;
+  text-align:center;
+  font-weight:900;
+}
+.theme.active{
+  border-color:#25f4ee;
+  box-shadow:0 0 20px rgba(37,244,238,.35);
+}
 .linkBox{
   margin-top:18px;
   background:#0f0f13;
@@ -68,145 +68,94 @@ button{
   word-break:break-all;
   display:none;
 }
-
-a{
-  color:#25f4ee;
-  font-weight:900;
-}
-
-.logout{
-  background:#2c2c35;
-}
+a{color:#25f4ee;font-weight:900}
+.logout{background:#2c2c35}
 </style>
 </head>
-
 <body>
 
 <div class="box">
+  <h1>Overlay Dashboard</h1>
+  <div id="userInfo">Yüklənir...</div>
 
-  <h1>Dashboard</h1>
+  <input id="username" placeholder="TikTok username">
 
-  <div class="info" id="userInfo">
-    Yüklənir...
+  <h3>Dizayn seç</h3>
+
+  <div class="themes">
+    <div class="theme active" onclick="setTheme('classic',this)">Classic</div>
+    <div class="theme" onclick="setTheme('neon',this)">Neon</div>
+    <div class="theme" onclick="setTheme('gold',this)">Gold</div>
+    <div class="theme" onclick="setTheme('pubg',this)">PUBG Mobile</div>
+    <div class="theme" onclick="setTheme('fire',this)">Fire</div>
+    <div class="theme" onclick="setTheme('ice',this)">Ice</div>
   </div>
 
-  <input
-    id="username"
-    placeholder="TikTok username"
-  >
-
-  <button onclick="saveUsername()">
-    Overlay yarat
-  </button>
+  <button onclick="saveUsername()">Overlay yarat</button>
 
   <div class="linkBox" id="overlayBox"></div>
 
-  <button
-    class="logout"
-    onclick="logout()"
-  >
-    Çıxış et
-  </button>
-
+  <button class="logout" onclick="logout()">Çıxış et</button>
 </div>
 
 <script>
+let selectedTheme = "classic";
+
+function setTheme(theme,el){
+  selectedTheme = theme;
+  document.querySelectorAll(".theme").forEach(x=>x.classList.remove("active"));
+  el.classList.add("active");
+}
 
 async function loadUser(){
-
   const res = await fetch("/me");
   const data = await res.json();
 
   if(!data.loggedIn){
-
     location.href = "/login.html";
     return;
-
   }
 
-  document.getElementById("userInfo")
-    .innerHTML =
-    `
-      Email: ${data.user.email}
-    `;
+  document.getElementById("userInfo").innerHTML = `Email: ${data.user.email}`;
 
   if(data.user.tiktok_username){
-
-    showOverlay(
-      data.user.tiktok_username
-    );
-
-    document.getElementById("username")
-      .value =
-      data.user.tiktok_username;
+    document.getElementById("username").value = data.user.tiktok_username;
+    showOverlay(data.user.tiktok_username);
   }
-
 }
 
 function showOverlay(username){
+  const link = `${location.origin}/overlay.html?user=${encodeURIComponent(username)}&theme=${selectedTheme}`;
 
-  const link =
-    `${location.origin}/overlay.html?user=${encodeURIComponent(username)}`;
-
-  const box =
-    document.getElementById("overlayBox");
-
+  const box = document.getElementById("overlayBox");
   box.style.display = "block";
-
-  box.innerHTML =
-  `
-    <div>
-      Overlay linkin:
-    </div>
-
-    <br>
-
-    <a
-      href="${link}"
-      target="_blank"
-    >
-      ${link}
-    </a>
+  box.innerHTML = `
+    <div>Overlay linkin:</div><br>
+    <a href="${link}" target="_blank">${link}</a>
   `;
 }
 
 async function saveUsername(){
+  const username = document.getElementById("username").value.trim().replace("@","");
 
-  const username =
-    document.getElementById("username")
-    .value
-    .trim()
-    .replace("@","");
-
-  const res =
-    await fetch("/save-username",{
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json"
-      },
-      body:JSON.stringify({
-        username
-      })
-    });
+  const res = await fetch("/save-username",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({username})
+  });
 
   const data = await res.json();
 
   if(data.success){
-
     showOverlay(username);
-
   }
-
 }
 
 function logout(){
-
   location.href = "/logout";
-
 }
 
 loadUser();
-
 </script>
 
 </body>

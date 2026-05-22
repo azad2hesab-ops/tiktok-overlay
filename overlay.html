@@ -14,6 +14,42 @@ body{
   color:white;
 }
 
+body.classic{
+  --c1:#25f4ee; --c2:#fe2c55; --c3:#f5c542;
+  --box:rgba(10,10,14,.88);
+  --name:#f5d06a;
+}
+
+body.neon{
+  --c1:#00f5ff; --c2:#ff00e6; --c3:#8a5cff;
+  --box:rgba(8,8,20,.90);
+  --name:#00f5ff;
+}
+
+body.gold{
+  --c1:#f7d774; --c2:#b8860b; --c3:#fff0a8;
+  --box:rgba(22,16,6,.90);
+  --name:#ffe38a;
+}
+
+body.pubg{
+  --c1:#ffb000; --c2:#3bff6f; --c3:#111;
+  --box:rgba(15,18,10,.92);
+  --name:#ffb000;
+}
+
+body.fire{
+  --c1:#ff3b00; --c2:#ffcc00; --c3:#ff0055;
+  --box:rgba(24,8,4,.92);
+  --name:#ffcc00;
+}
+
+body.ice{
+  --c1:#aefcff; --c2:#4aa3ff; --c3:#ffffff;
+  --box:rgba(8,16,24,.92);
+  --name:#aefcff;
+}
+
 .leaderboard{
   position:absolute;
   left:50%;
@@ -32,36 +68,11 @@ body{
   transition:.3s;
 }
 
-.gifter.pos1{
-  width:170px;
-  order:3;
-  transform:translateY(-38px);
-  z-index:10;
-}
-
-.gifter.pos2{
-  order:2;
-  transform:translateY(2px);
-  z-index:8;
-}
-
-.gifter.pos3{
-  order:4;
-  transform:translateY(2px);
-  z-index:8;
-}
-
-.gifter.pos4{
-  order:1;
-  transform:translateY(26px);
-  z-index:6;
-}
-
-.gifter.pos5{
-  order:5;
-  transform:translateY(26px);
-  z-index:6;
-}
+.gifter.pos1{width:170px;order:3;transform:translateY(-38px);z-index:10}
+.gifter.pos2{order:2;transform:translateY(2px);z-index:8}
+.gifter.pos3{order:4;transform:translateY(2px);z-index:8}
+.gifter.pos4{order:1;transform:translateY(26px);z-index:6}
+.gifter.pos5{order:5;transform:translateY(26px);z-index:6}
 
 .avatarWrap{
   width:82px;
@@ -69,15 +80,16 @@ body{
   margin:0 auto -8px;
   border-radius:50%;
   padding:4px;
-  background:linear-gradient(135deg,#25f4ee,#fe2c55,#f5c542);
-  box-shadow:0 0 20px rgba(37,244,238,.45);
+  background:linear-gradient(135deg,var(--c1),var(--c2),var(--c3));
+  box-shadow:0 0 24px color-mix(in srgb, var(--c1) 70%, transparent);
   position:relative;
+  animation:softGlow 2.3s ease-in-out infinite;
 }
 
 .pos1 .avatarWrap{
   width:132px;
   height:132px;
-  box-shadow:0 0 38px rgba(245,197,66,.9),0 0 60px rgba(254,44,85,.35);
+  box-shadow:0 0 42px var(--c3),0 0 70px var(--c2);
 }
 
 .avatar{
@@ -95,12 +107,10 @@ body{
   transform:translateX(-50%);
   font-size:38px;
   display:none;
-  filter:drop-shadow(0 0 12px #f5c542);
+  filter:drop-shadow(0 0 12px var(--c3));
 }
 
-.pos1 .crown{
-  display:block;
-}
+.pos1 .crown{display:block}
 
 .rank{
   position:absolute;
@@ -109,7 +119,7 @@ body{
   width:27px;
   height:27px;
   border-radius:50%;
-  background:#f5c542;
+  background:var(--c3);
   color:#111;
   font-size:15px;
   font-weight:900;
@@ -119,15 +129,11 @@ body{
   border:2px solid #111;
 }
 
-.pos1 .rank{
-  width:34px;
-  height:34px;
-  font-size:18px;
-}
+.pos1 .rank{width:34px;height:34px;font-size:18px}
 
 .nameBox{
-  background:rgba(10,10,14,.88);
-  border:1px solid rgba(255,255,255,.14);
+  background:var(--box);
+  border:1px solid rgba(255,255,255,.16);
   border-radius:14px;
   padding:9px 7px 8px;
   box-shadow:0 8px 24px rgba(0,0,0,.45);
@@ -135,7 +141,7 @@ body{
 
 .pos1 .nameBox{
   padding:11px 9px 10px;
-  border:1px solid rgba(245,197,66,.45);
+  border:1px solid var(--c3);
 }
 
 .name{
@@ -144,12 +150,10 @@ body{
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
-  color:#f5d06a;
+  color:var(--name);
 }
 
-.pos1 .name{
-  font-size:16px;
-}
+.pos1 .name{font-size:16px}
 
 .coins{
   margin-top:5px;
@@ -158,9 +162,7 @@ body{
   color:#fff;
 }
 
-.pos1 .coins{
-  font-size:17px;
-}
+.pos1 .coins{font-size:17px}
 
 .empty{
   position:absolute;
@@ -190,7 +192,7 @@ body{
   font-size:46px;
   z-index:99;
   animation:flyBeast 1s ease-in-out infinite;
-  filter:drop-shadow(0 0 14px #f5c542);
+  filter:drop-shadow(0 0 14px var(--c3));
 }
 
 .giftTag{
@@ -198,20 +200,34 @@ body{
   top:-22px;
   left:50%;
   transform:translateX(-50%);
-  background:linear-gradient(135deg,#fe2c55,#f5c542);
+  background:linear-gradient(135deg,var(--c2),var(--c3));
   color:#111;
   padding:5px 11px;
   border-radius:20px;
   font-size:11px;
   font-weight:900;
-  box-shadow:0 0 20px rgba(245,197,66,.8);
+  box-shadow:0 0 20px var(--c3);
   z-index:98;
 }
 
+body.pubg .crown::before{content:"🏆"}
+body.fire .crown::before{content:"🔥"}
+body.ice .crown::before{content:"❄️"}
+body.neon .crown::before{content:"⚡"}
+body.gold .crown::before{content:"👑"}
+body.classic .crown::before{content:"👑"}
+.crown{font-size:0}
+.crown::before{font-size:38px}
+
+@keyframes softGlow{
+  0%,100%{filter:brightness(1)}
+  50%{filter:brightness(1.25)}
+}
+
 @keyframes giftFrame{
-  0%{transform:scale(1);box-shadow:0 0 10px #25f4ee;}
-  50%{transform:scale(1.14);box-shadow:0 0 42px #f5c542,0 0 65px #fe2c55;}
-  100%{transform:scale(1);box-shadow:0 0 10px #25f4ee;}
+  0%{transform:scale(1);box-shadow:0 0 10px var(--c1)}
+  50%{transform:scale(1.14);box-shadow:0 0 42px var(--c3),0 0 65px var(--c2)}
+  100%{transform:scale(1);box-shadow:0 0 10px var(--c1)}
 }
 
 @keyframes giftShake{
@@ -226,62 +242,19 @@ body{
 }
 
 @media(max-width:800px){
-  .leaderboard{
-    bottom:30px;
-    gap:7px;
-  }
-
-  .gifter{
-    width:68px;
-  }
-
-  .gifter.pos1{
-    width:92px;
-    transform:translateY(-28px);
-  }
-
-  .avatarWrap{
-    width:54px;
-    height:54px;
-  }
-
-  .pos1 .avatarWrap{
-    width:74px;
-    height:74px;
-  }
-
-  .name{
-    font-size:10px;
-  }
-
-  .pos1 .name{
-    font-size:11px;
-  }
-
-  .coins{
-    font-size:11px;
-  }
-
-  .pos1 .coins{
-    font-size:12px;
-  }
-
-  .rank{
-    width:20px;
-    height:20px;
-    font-size:11px;
-  }
-
-  .pos1 .rank{
-    width:24px;
-    height:24px;
-    font-size:13px;
-  }
-
-  .crown{
-    top:-28px;
-    font-size:28px;
-  }
+  .leaderboard{bottom:30px;gap:7px}
+  .gifter{width:68px}
+  .gifter.pos1{width:92px;transform:translateY(-28px)}
+  .avatarWrap{width:54px;height:54px}
+  .pos1 .avatarWrap{width:74px;height:74px}
+  .name{font-size:10px}
+  .pos1 .name{font-size:11px}
+  .coins{font-size:11px}
+  .pos1 .coins{font-size:12px}
+  .rank{width:20px;height:20px;font-size:11px}
+  .pos1 .rank{width:24px;height:24px;font-size:13px}
+  .crown{top:-28px}
+  .crown::before{font-size:28px}
 }
 </style>
 </head>
@@ -296,6 +269,9 @@ const socket = io();
 
 const params = new URLSearchParams(window.location.search);
 const username = params.get("user");
+const theme = params.get("theme") || "classic";
+
+document.body.className = theme;
 
 socket.emit("joinLive", username);
 
@@ -324,7 +300,7 @@ function renderTopGifters(list){
     return `
       <div class="gifter ${positionClass}" data-user="${String(u.userId)}">
         <div class="avatarWrap">
-          <div class="crown">👑</div>
+          <div class="crown"></div>
           <img class="avatar" src="${avatar}">
           <div class="rank">${index + 1}</div>
         </div>
@@ -346,7 +322,12 @@ function animateGifter(userId){
 
   const beast = document.createElement("div");
   beast.className = "beast";
-  beast.innerText = Math.random() > 0.5 ? "🦅" : "🦁";
+
+  if(theme === "pubg") beast.innerText = "💥";
+  else if(theme === "fire") beast.innerText = "🔥";
+  else if(theme === "ice") beast.innerText = "❄️";
+  else if(theme === "gold") beast.innerText = "👑";
+  else beast.innerText = Math.random() > 0.5 ? "🦅" : "🦁";
 
   const tag = document.createElement("div");
   tag.className = "giftTag";
