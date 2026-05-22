@@ -86,9 +86,7 @@ app.post("/save-username", (req, res) => {
   db.run(
     "UPDATE users SET tiktok_username = ? WHERE id = ?",
     [username, req.session.userId],
-    () => {
-      res.json({ success: true, username });
-    }
+    () => res.json({ success: true, username })
   );
 });
 
@@ -100,9 +98,7 @@ app.get("/me", (req, res) => {
   db.get(
     "SELECT id, email, tiktok_username FROM users WHERE id = ?",
     [req.session.userId],
-    (err, user) => {
-      res.json({ loggedIn: true, user });
-    }
+    (err, user) => res.json({ loggedIn: true, user })
   );
 });
 
@@ -157,22 +153,31 @@ function getAvatar(data) {
   );
 }
 
-function getDiamondCount(data) {
-  return Number(
+function getDiamondCount(data, giftName) {
+  let count = Number(
     data.diamondCount ||
     data.gift?.diamond_count ||
     data.gift?.diamondCount ||
     data.giftDetails?.diamondCount ||
-    1
+    0
   );
+
+  const name = String(giftName || "").toLowerCase();
+
+  if (!count || count <= 1) {
+    if (name.includes("universe") || name.includes("universal")) count = 44999;
+    else if (name.includes("lion")) count = 29999;
+    else if (name.includes("castle")) count = 20000;
+    else if (name.includes("rocket")) count = 20000;
+    else if (name.includes("planet")) count = 15000;
+    else count = 1;
+  }
+
+  return count;
 }
 
 function getRepeatCount(data) {
   return Number(data.repeatCount || data.repeat_count || 1);
-}
-
-function shouldIgnoreGift(data) {
-  return data.giftType === 1 && data.repeatEnd === false;
 }
 
 function createLiveRoom(username) {
@@ -212,15 +217,11 @@ function createLiveRoom(username) {
     });
 
   room.connection.on("gift", data => {
-    if (shouldIgnoreGift(data)) {
-      return;
-    }
-
     const userId = String(data.userId || data.uniqueId || data.nickname || "unknown");
     const nickname = data.nickname || data.uniqueId || "User";
     const giftName = data.giftName || data.gift?.name || "Gift";
     const repeatCount = getRepeatCount(data);
-    const diamondCount = getDiamondCount(data);
+    const diamondCount = getDiamondCount(data, giftName);
     const avatar = getAvatar(data);
 
     const giftValue = diamondCount * repeatCount;
@@ -230,12 +231,10 @@ function createLiveRoom(username) {
       giftName,
       repeatCount,
       diamondCount,
-      data.timestamp || data.createTime || Date.now()
+      data.msgId || data.giftId || data.timestamp || data.createTime || Date.now()
     ].join("_");
 
-    if (room.processedGifts.has(giftKey)) {
-      return;
-    }
+    if (room.processedGifts.has(giftKey)) return;
 
     room.processedGifts.add(giftKey);
 
